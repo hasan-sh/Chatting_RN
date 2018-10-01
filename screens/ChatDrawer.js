@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 
 import { signOut } from '../stores/actions/auth'
-import { DrawerItems, DrawerNavigationState } from 'react-navigation'
+import { DrawerItems } from 'react-navigation'
 
 class ChatDrawer extends Component {
   constructor(props) {
@@ -11,9 +11,6 @@ class ChatDrawer extends Component {
     this.state = { messages: null }
   }
 
-  componentDidMount() {
-    DrawerNavigationState
-  }
   componentWillReceiveProps = newProps => {
     this.setState({ messages: newProps.messages })
   }
@@ -21,7 +18,6 @@ class ChatDrawer extends Component {
   render() {
     const { currentUser } = this.props
     const { messages } = this.state
-    // console.log('drawers props', messages)
     const name = currentUser
       ? currentUser.name
         ? currentUser.name

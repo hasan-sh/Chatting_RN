@@ -30,7 +30,6 @@ export function addMessage(user, messageText) {
       .ref(`messages/${createdAt}`)
       .set(message)
       .then(() => {
-        // This is not needed, because in the chat initial mounting life cycle method you've got an observer for the messages in the DB of Firebase.
         dispatch({
           type: types.ADD_MESSAGE,
           message

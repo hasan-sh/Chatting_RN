@@ -21,9 +21,15 @@ class Login extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      email: 'hasan@gmail.com',
+      email: '',
       name: '',
-      password: 'Soso123'
+      password: ''
+    }
+  }
+
+  componentWillReceiveProps = newProps => {
+    if (newProps.currentUser) {
+      this.props.navigation.replace('Chat')
     }
   }
 
@@ -35,7 +41,7 @@ class Login extends Component {
   }
 
   render() {
-    const { loading } = this.props
+    const { loading, error } = this.props
     const button = loading ? (
       <ActivityIndicator size="small" color="blue" />
     ) : (
@@ -43,6 +49,9 @@ class Login extends Component {
     )
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <Text style={{ color: 'red', width: '80%' }}>
+          {error ? error.message : null}
+        </Text>
         <TextInput
           placeholder="Your Name.."
           textContentType="name"
@@ -88,6 +97,6 @@ const styles = StyleSheet.create({
 })
 
 export default connect(
-  state => ({ loading: state.loading }),
+  state => state,
   { signIn }
 )(Login)

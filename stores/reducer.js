@@ -1,9 +1,6 @@
 import {
-  USER_EXISTS,
-  ADD_USER,
   SIGN_OUT,
   ADD_MESSAGE,
-  ADD_MESSAGES,
   REMOVE_MESSAGE,
   SIGNING_IN,
   LOGGED_IN,
@@ -19,8 +16,6 @@ const initialState = {
   error: null
 }
 
-// user = { id: {name, email, ...}}
-
 function reducer(state = initialState, action$) {
   switch (action$.type) {
     case SIGNING_IN: {
@@ -35,7 +30,8 @@ function reducer(state = initialState, action$) {
       return {
         ...state,
         currentUser: user,
-        loading: false
+        loading: false,
+        error: null
       }
     }
     case SIGNING_UP:
@@ -61,7 +57,7 @@ function reducer(state = initialState, action$) {
     }
 
     case SIGN_OUT: {
-      return { ...state, currentUser: null, messages: [] }
+      return { ...state, currentUser: null, messages: null }
     }
 
     case REMOVE_MESSAGE: {

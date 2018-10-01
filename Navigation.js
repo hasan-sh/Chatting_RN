@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-  createStackNavigator,
-  createDrawerNavigator,
-  DrawerItems
-} from 'react-navigation'
+import { createStackNavigator, createDrawerNavigator } from 'react-navigation'
 
 import Home from './screens/Home'
 import Chat from './screens/Chat'

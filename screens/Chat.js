@@ -56,7 +56,7 @@ class Chat extends Component {
 
   componentWillReceiveProps = newProps => {
     if (newProps.currentUser == null) {
-      this.props.navigation.navigate('Login')
+      this.props.navigation.replace('Login')
     }
   }
 
@@ -97,7 +97,7 @@ class Chat extends Component {
             borderRadius: 15
           }}
         >
-          {message.name || 'User'}
+          {message.userName || 'User'}
         </Text>
         {/* 
           <InputText 
@@ -127,7 +127,7 @@ class Chat extends Component {
               )
             }
           }}
-          delayLongPress={200}
+          delayLongPress={100}
         >
           <View
             style={{
