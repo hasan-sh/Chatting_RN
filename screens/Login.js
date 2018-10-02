@@ -64,7 +64,7 @@ class Login extends Component {
           textContentType="emailAddress"
           style={styles.input}
           value={this.state.email}
-          onChangeText={email => this.setState({ email })}
+          onChangeText={email => this.setState({ email: email.trim() })}
         />
         <TextInput
           placeholder="Your password Address.."
