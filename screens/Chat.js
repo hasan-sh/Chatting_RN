@@ -31,6 +31,7 @@ class Chat extends Component {
   event = () => {
     setTimeout(() => {
       this.refs.scrollView.scrollToEnd({ animated: true })
+      console.log('scrolling...')
     }, 10)
   }
   componentWillMount() {
@@ -77,6 +78,7 @@ class Chat extends Component {
   }
 
   messageItem = (id, message) => {
+    const userName = message.userName || 'User'
     return (
       <View
         key={id}
@@ -96,7 +98,7 @@ class Chat extends Component {
             borderRadius: 15
           }}
         >
-          {message.userName || 'User'}
+          {userName}
         </Text>
 
         <TouchableWithoutFeedback
@@ -118,7 +120,7 @@ class Chat extends Component {
               )
             }
           }}
-          delayLongPress={100}
+          delayLongPress={500}
         >
           <View
             style={{
@@ -149,25 +151,24 @@ class Chat extends Component {
     const messages = this.props.messages ? (
       this.getListOfMessages()
     ) : (
-      <ActivityIndicator size="large" color="black" />
+      <Text>Loading messages...</Text>
     )
 
     return (
-      // Check he scrolling behavior of the scrollView when the keyboard is opened.
-      // If there's no built-in method that detects that, you can hack it by listening to the scrolling event on the scrollView and then change the height accordingly!
       <KeyboardAvoidingView
-        // Margin Top should be the statusBar's height
-        style={{ flex: 1, marginTop: 23 }}
+        style={{ flex: 1, alignContent: 'flex-end' }}
         behavior="padding"
         enabled
       >
-        <ScrollView
-          ref="scrollView"
-          onContentSizeChange={this.event}
-          contentContainerStyle={styles.chatBody}
-        >
-          {messages}
-        </ScrollView>
+        <View style={styles.chatBody}>
+          <ScrollView
+            ref="scrollView"
+            onContentSizeChange={this.event}
+            contentContainerStyle={{ alignItems: 'center' }}
+          >
+            {messages}
+          </ScrollView>
+        </View>
         <View style={styles.inputsContainer}>
           <TextInput
             placeholder="Add Message.."
@@ -186,17 +187,15 @@ class Chat extends Component {
 const styles = StyleSheet.create({
   chatBody: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     paddingBottom: 5,
-    paddingVertical: 20
+    paddingVertical: 23
   },
   inputsContainer: {
-    // flex: 1,
     backgroundColor: '#24292e',
     padding: 10,
-    flexDirection: 'row',
-    alignItems: 'flex-end'
+    flexDirection: 'row'
   },
   input: {
     flex: 1,

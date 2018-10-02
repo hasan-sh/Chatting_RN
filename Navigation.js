@@ -23,7 +23,7 @@ const AppStack = createStackNavigator(
     Login: { screen: Login },
     Chat: {
       screen: ChatDrawerStack,
-      navigationOptions: { title: 'Chat', headerMode: 'none' }
+      navigationOptions: { title: 'Chat' }
     }
   },
   { headerLayoutPreset: 'center', headerMode: 'none' }
