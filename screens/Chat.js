@@ -25,7 +25,7 @@ class Chat extends Component {
 
   constructor(props) {
     super(props)
-    this.state = { message: '', messages: null }
+    this.state = { message: '' }
   }
 
   event = () => {
@@ -34,7 +34,6 @@ class Chat extends Component {
     }, 10)
   }
   componentWillMount() {
-    // ScrollView.scrollToEnd({ animated: true })
     firebase
       .database()
       .ref('messages')
@@ -99,14 +98,6 @@ class Chat extends Component {
         >
           {message.userName || 'User'}
         </Text>
-        {/* 
-          <InputText 
-          style={...} 
-          onFocus={e=> firebase.database().ref(key).update(this.messageText)}
-          value={this.state.messageText} 
-          onTextChange={messageText=> this.setState({messageText})} 
-          />
-        */}
 
         <TouchableWithoutFeedback
           onLongPress={() => {
@@ -165,14 +156,15 @@ class Chat extends Component {
       // Check he scrolling behavior of the scrollView when the keyboard is opened.
       // If there's no built-in method that detects that, you can hack it by listening to the scrolling event on the scrollView and then change the height accordingly!
       <KeyboardAvoidingView
-        style={{ flex: 1, marginTop: 25 }}
+        // Margin Top should be the statusBar's height
+        style={{ flex: 1, marginTop: 23 }}
         behavior="padding"
         enabled
       >
         <ScrollView
           ref="scrollView"
           onContentSizeChange={this.event}
-          contentContainerStyle={{ paddingVertical: 10 }}
+          contentContainerStyle={styles.chatBody}
         >
           {messages}
         </ScrollView>
@@ -194,7 +186,6 @@ class Chat extends Component {
 const styles = StyleSheet.create({
   chatBody: {
     flex: 1,
-    backgroundColor: '#ffc0cbdb',
     flexDirection: 'column',
     justifyContent: 'flex-end',
     paddingBottom: 5,

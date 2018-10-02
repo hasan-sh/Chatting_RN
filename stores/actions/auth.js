@@ -7,14 +7,25 @@ import * as types from '../types'
 export function signIn({ name, email, password }) {
   return dispatch => {
     dispatch({ type: types.SIGNING_IN })
-    if (!email && !password) return dispatch({ type: FAILURE })
+    if (!email && !password)
+      return dispatch({
+        type: FAILURE,
+        error: { message: 'Missing Email Address or Password' }
+      })
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(({ user: { uid: id } }) =>
-        loggedInDone(dispatch, { id, name, email })
-      )
-      .catch(() => signUp(dispatch, { name, email, password }))
+      .then(({ user: { uid: id } }) => {
+        const userName = firebase.auth().currentUser.displayName || name
+        loggedInDone(dispatch, { id, name: userName, email })
+      })
+      .catch(error => {
+        if (error.code === 'auth/wrong-password') {
+          dispatch({ type: types.FAILURE, error })
+        } else {
+          signUp(dispatch, { name, email, password })
+        }
+      })
   }
 }
 
@@ -36,10 +47,17 @@ export function signUp(dispatch, { name, email, password }) {
   firebase
     .auth()
     .createUserWithEmailAndPassword(email, password)
-    .then(({ user: { uid, email } }) =>
+    .then(({ user: { uid, email } }) => {
+      if (name) {
+        // This cannot fail..
+        firebase
+          .auth()
+          .currentUser.updateProfile({ displayName: name })
+          .then(() => console.log('user updated', name))
+      }
       loggedInDone(dispatch, { id: uid, name, email })
-    )
-    .catch(error => dispatch({ type: types.FAILURE, error: error }))
+    })
+    .catch(error => dispatch({ type: types.FAILURE, error }))
 }
 
 export function signOut() {
