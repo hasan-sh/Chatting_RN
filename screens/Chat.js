@@ -7,11 +7,12 @@ import {
   StyleSheet,
   Button,
   TouchableWithoutFeedback,
-  ActivityIndicator,
+  Platform,
   KeyboardAvoidingView,
   Alert,
   Keyboard
 } from 'react-native'
+import { Permissions, Notifications } from 'expo'
 
 import { connect } from 'react-redux'
 import firebase from '../firebase'
@@ -28,13 +29,45 @@ class Chat extends Component {
     this.state = { message: '' }
   }
 
-  event = () => {
+  registerForPushNotificationsAsync = async () => {
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    )
+    let finalStatus = existingStatus
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS)
+      finalStatus = status
+    }
+
+    if (finalStatus !== 'granted') {
+      return
+    }
+    const token = await Notifications.getExpoPushTokenAsync()
+    if (!firebase.auth().currentUser) return
+    const uid = firebase.auth().currentUser.uid
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('chat-messages', {
+        name: 'Chat messages',
+        sound: true
+      })
+    }
+
+    firebase
+      .database()
+      .ref('users')
+      .child(uid)
+      .update({ expoToken: token })
+  }
+
+  scrollToEnd = () => {
     setTimeout(() => {
       this.refs.scrollView.scrollToEnd({ animated: true })
-      console.log('scrolling...')
     }, 10)
   }
+
   componentWillMount() {
+    this.registerForPushNotificationsAsync()
     firebase
       .database()
       .ref('messages')
@@ -46,7 +79,7 @@ class Chat extends Component {
       })
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
-      this.event
+      this.scrollToEnd
     )
   }
 
@@ -65,6 +98,26 @@ class Chat extends Component {
     if (message) {
       const { addMessage, currentUser } = this.props
       addMessage(currentUser, message)
+
+      firebase
+        .database()
+        .ref('messages')
+        .on('child_added', snap => {
+          if (
+            snap.val() != null &&
+            snap.val().message === message &&
+            snap.val().userId !== currentUser.id
+          ) {
+            Notifications.presentLocalNotificationAsync({
+              title: `${snap.val().userName}'s sent a message.`,
+              body: message,
+              android: {
+                channelId: 'chat-messages',
+                vibrate: [0, 25, 25, 250]
+              }
+            })
+          }
+        })
       this.setState({ message: '' })
     }
   }
@@ -120,7 +173,7 @@ class Chat extends Component {
               )
             }
           }}
-          delayLongPress={500}
+          delayLongPress={300}
         >
           <View
             style={{
@@ -163,7 +216,7 @@ class Chat extends Component {
         <View style={styles.chatBody}>
           <ScrollView
             ref="scrollView"
-            onContentSizeChange={this.event}
+            onContentSizeChange={this.scrollToEnd}
             contentContainerStyle={{ alignItems: 'center' }}
           >
             {messages}

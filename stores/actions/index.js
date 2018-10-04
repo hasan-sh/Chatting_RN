@@ -21,7 +21,7 @@ export function addMessage(user, messageText) {
     const userId = user.id
     const createdAt = Date.now()
     const message = {
-      userId: userId,
+      userId,
       userName: user.name || 'User',
       message: messageText
     }
@@ -29,12 +29,12 @@ export function addMessage(user, messageText) {
       .database()
       .ref(`messages/${createdAt}`)
       .set(message)
-      .then(() => {
+      .then(() =>
         dispatch({
           type: types.ADD_MESSAGE,
           message
         })
-      })
+      )
   }
 }
 
